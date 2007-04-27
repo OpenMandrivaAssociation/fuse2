@@ -5,8 +5,9 @@
 
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
-Version:        2.6.3
+Version:        2.6.4
 Release:        %mkrel 1
+Epoch:          0
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
@@ -116,17 +117,17 @@ EOF
 %postun -n %{libname} -p /sbin/ldconfig
 
 %post -n dkms-%{name}
-dkms add -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-dkms build -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
+%{_sbindir}/dkms add -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
+%{_sbindir}/dkms build -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
+%{_sbindir}/dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
 
 if [ $1 = 1 ]; then
-  %{__grep} '[^#]*%{name}' %{_sysconfdir}/modprobe.preload || echo %{name} >> %{_sysconfdir}/modprobe.preload
-  modprobe %{name}
+  %{__grep} '[^#]*%{name}' %{_sysconfdir}/modprobe.preload || /bin/echo %{name} >> %{_sysconfdir}/modprobe.preload
+  /sbin/modprobe %{name}
 fi
 
 %preun -n dkms-%{name}
-dkms remove -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all ||:
+%{_sbindir}/dkms remove -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all ||:
 
 %postun -n dkms-%{name}
 if [ $1 = 0 ]; then
@@ -134,8 +135,9 @@ if [ $1 = 0 ]; then
 fi
 
 %files
-%defattr(-,root,root,0755)
+%defattr(0644,root,root,0755)
 %doc AUTHORS COPYING COPYING.LIB ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
+%defattr(-,root,root,0755)
 %{_bindir}/fusermount
 %config(noreplace) %{_sysconfdir}/udev/rules.d/99-fuse.rules
 /sbin/mount.fuse
