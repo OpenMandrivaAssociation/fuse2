@@ -3,11 +3,11 @@
 %define libnamedev              %mklibname %{name} %{major} -d
 %define libnamestaticdev        %mklibname %{name} %{major} -d -s
 
-Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
-Version:        2.6.4
+Version:        2.6.5
 Release:        %mkrel 1
 Epoch:          0
+Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
@@ -28,9 +28,10 @@ create and mount their own filesystem implementations.
 %package -n %{libnamedev}
 Summary:        Header files and development libraries for libfuse2
 Group:          Development/C
-Provides:       lib%{name}-devel = %{version}-%{release} %{name}-devel = %{version}-%{release}
-Provides:       %{_lib}fuse-devel
-Requires:       %{libname} = %{version}
+Provides:       lib%{name}-devel = %{epoch}:%{version}-%{release}
+Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
+Provides:       %{_lib}fuse-devel = %{epoch}:%{version}-%{release}
+Requires:       %{libname} = %{epoch}:%{version}-%{release}
 
 %description -n %{libnamedev}
 Header files and development libraries for fuse.
@@ -45,13 +46,13 @@ Libraries for fuse.
 %package -n %{libnamestaticdev}
 Summary:        Static libraries for fuse
 Group:          Development/C
-Provides:       libfuse-static-devel = %{version}-%{release}
-Provides:       %{_lib}fuse-static-devel
+Provides:       libfuse-static-devel = %{epoch}:%{version}-%{release}
+Provides:       %{_lib}fuse-static-devel = %{epoch}:%{version}-%{release}
 
 %description -n %{libnamestaticdev}
 Static libraries for fuse.
 
-%package -n     dkms-%{name}
+%package -n dkms-%{name}
 Summary:        Linux kernel module for FUSE (Filesystem in Userspace)
 Group:          System/Kernel and hardware
 Requires(post): dkms
@@ -94,7 +95,7 @@ PACKAGE_VERSION="%{version}-%{release}"
 
 PACKAGE_NAME="%{name}"
 MAKE[0]="./configure --enable-kernel-module && %{__make}"
-CLEAN="test -f Makefile && %{__make} clean || :"
+CLEAN="%{_bindir}/test -r Makefile && %{__make} clean || :"
 
 BUILT_MODULE_NAME[0]="\$PACKAGE_NAME"
 DEST_MODULE_LOCATION[0]="/kernel/fs/\$PACKAGE_NAME/"
@@ -153,16 +154,14 @@ fi
 %files -n %{libnamedev}
 %defattr(-,root,root,0755)
 %{_includedir}/*
+%{_libdir}/libfuse.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
 %files -n %{libnamestaticdev}
-%defattr(-,root,root,0755)
-%{_libdir}/libfuse.la
+%defattr(0644,root,root,0755)
 %{_libdir}/libfuse.a
 
 %files -n dkms-%{name}
 %defattr(-,root,root,0755)
 %{_usrsrc}/%{name}-%{version}-%{release}
-
-
