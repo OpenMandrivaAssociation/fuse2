@@ -5,7 +5,7 @@
 
 Name:           fuse
 Version:        2.6.5
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
