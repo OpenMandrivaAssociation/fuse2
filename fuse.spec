@@ -5,7 +5,7 @@
 
 Name:           fuse
 Version:        2.7.0
-Release:        %mkrel 2
+Release:        %mkrel 3
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
@@ -130,7 +130,7 @@ EOF
 %_preun_service fuse
 
 %post
-%{_bindir}/test -x /sbin/makedev && /sbin/makedev fuse
+%{_bindir}/test -x /sbin/makedev && /sbin/makedev fuse || :
 %_post_service fuse
 
 %postun
