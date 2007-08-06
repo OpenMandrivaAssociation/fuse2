@@ -5,14 +5,18 @@
 
 Name:           fuse
 Version:        2.7.0
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
 Source0:        http://ovh.dl.sourceforge.net/fuse/fuse-%{version}.tar.gz
-Source1:        fuse.init
+Source1:        fuse-udev.nodes
+Source2:        fuse-makedev.d-fuse
+Source4:        fuse.init
+Patch0:         fuse-udev_rules.patch
+Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 BuildRequires:  kernel-source
@@ -68,24 +72,36 @@ This package provides the kernel module part.
 
 %prep
 %setup -q
+%patch0 -p0
 %{__rm} util/init_script
-%{__cp} -a %{SOURCE1} util/init_script
+%{__cp} -a %{SOURCE4} util/init_script
+%{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
 
 %build
-%{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure.in
-%{__autoconf}
-%{__libtoolize} --copy --force
-%{configure2_5x} --disable-kernel-module
-%{__make} LIBTOOL=%{_bindir}/libtool
+%{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure
+%{configure2_5x} --disable-kernel-module \
+ --libdir=/%{_lib} \
+ --bindir=/bin \
+ --exec-prefix=/
+%{make}
 
 %install
 %{__rm} -rf %{buildroot}
+%{makeinstall_std}
 
-# make install tries to mknod which will of course fail as a user.
-# This works around that as it tests if the file exists.
-%{__mkdir_p} %{buildroot}/dev/fuse
+%{__mkdir_p} %{buildroot}%{_sysconfdir}/udev/devices.d
+%{__cp} -a %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/devices.d/99-fuse.nodes
+%{__mkdir_p} %{buildroot}%{_sysconfdir}/makedev.d
+%{__cp} -a %{SOURCE2} %{buildroot}%{_sysconfdir}/makedev.d/z-fuse
 
-%{makeinstall_std} LIBTOOL=%{_bindir}/libtool
+%{__mkdir_p} %{buildroot}%{_libdir}
+%{__mv} %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
+
+%{__mkdir_p} %{buildroot}%{_bindir}
+pushd %{buildroot}%{_bindir}
+%{__ln_s} /bin/fusermount fusermount
+%{__ln_s} /bin/ulockmgr_server ulockmgr_server
+popd
 
 %{__mkdir_p} %{buildroot}%{_usrsrc}
 %{__cp} -a kernel %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}
@@ -94,8 +110,8 @@ This package provides the kernel module part.
 PACKAGE_VERSION="%{version}-%{release}"
 
 PACKAGE_NAME="%{name}"
-MAKE[0]="./configure --enable-kernel-module && %{__make}"
-CLEAN="%{_bindir}/test -r Makefile && %{__make} clean || :"
+MAKE[0]="./configure --enable-kernel-module && %{make}"
+CLEAN="%{_bindir}/test -r Makefile && %{make} clean || :"
 
 BUILT_MODULE_NAME[0]="\$PACKAGE_NAME"
 DEST_MODULE_LOCATION[0]="/kernel/fs/\$PACKAGE_NAME/"
@@ -107,11 +123,18 @@ EOF
 %clean
 %{__rm} -rf %{buildroot}
 
-%post
-%_post_service fuse
+%pre
+%_pre_groupadd fuse
 
 %preun
 %_preun_service fuse
+
+%post
+%{_bindir}/test -x /sbin/makedev && /sbin/makedev fuse
+%_post_service fuse
+
+%postun
+%_postun_groupdel fuse
 
 %post -n %{libname} -p /sbin/ldconfig
 
@@ -138,29 +161,32 @@ fi
 %files
 %defattr(0644,root,root,0755)
 %doc AUTHORS COPYING COPYING.LIB ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
-%defattr(-,root,root,0755)
-%{_bindir}/fusermount
-%config(noreplace) %{_sysconfdir}/udev/rules.d/99-fuse.rules
-/sbin/mount.fuse
+%attr(0755,root,root) /sbin/mount.fuse
+%attr(4755,root,fuse) /bin/fusermount
+%attr(0755,root,root) /bin/ulockmgr_server
 %attr(0755,root,root) %{_initrddir}/fuse
+%config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
+%{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
-%exclude %{_libdir}/libulockmgr.a
-%exclude %{_libdir}/libulockmgr.la
+%config(noreplace) %{_sysconfdir}/udev/rules.d/99-fuse.rules
+%config(noreplace) %{_sysconfdir}/udev/devices.d/99-fuse.nodes
+%exclude /%{_lib}/libulockmgr.a
+%exclude /%{_lib}/libulockmgr.la
 
 %files -n %{libname}
 %defattr(-,root,root,0755)
-%{_libdir}/*.so.*
+/%{_lib}/*.so.*
 
 %files -n %{libnamedev}
 %defattr(-,root,root,0755)
 %{_includedir}/*
-%{_libdir}/libfuse.la
-%{_libdir}/*.so
+/%{_lib}/libfuse.la
+/%{_lib}/*.so
 %{_libdir}/pkgconfig/*
 
 %files -n %{libnamestaticdev}
 %defattr(0644,root,root,0755)
-%{_libdir}/libfuse.a
+/%{_lib}/libfuse.a
 
 %files -n dkms-%{name}
 %defattr(-,root,root,0755)
