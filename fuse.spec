@@ -1,11 +1,11 @@
 %define major                   2
 %define libname                 %mklibname %{name} %{major}
-%define libnamedev              %mklibname %{name} %{major} -d
-%define libnamestaticdev        %mklibname %{name} %{major} -d -s
+%define libnamedev              %mklibname %{name} -d
+%define libnamestaticdev        %mklibname %{name} -d -s
 
 Name:           fuse
 Version:        2.7.0
-Release:        %mkrel 3
+Release:        %mkrel 4
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
@@ -32,9 +32,7 @@ create and mount their own filesystem implementations.
 %package -n %{libnamedev}
 Summary:        Header files and development libraries for libfuse2
 Group:          Development/C
-Provides:       lib%{name}-devel = %{epoch}:%{version}-%{release}
 Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
-Provides:       %{_lib}fuse-devel = %{epoch}:%{version}-%{release}
 Requires:       %{libname} = %{epoch}:%{version}-%{release}
 
 %description -n %{libnamedev}
@@ -50,8 +48,8 @@ Libraries for fuse.
 %package -n %{libnamestaticdev}
 Summary:        Static libraries for fuse
 Group:          Development/C
-Provides:       libfuse-static-devel = %{epoch}:%{version}-%{release}
-Provides:       %{_lib}fuse-static-devel = %{epoch}:%{version}-%{release}
+Provides:       %{name}-static-devel = %{epoch}:%{version}-%{release}
+Requires:       %{libnamedev} = %{epoch}:%{version}-%{release}
 
 %description -n %{libnamestaticdev}
 Static libraries for fuse.
@@ -130,7 +128,6 @@ EOF
 %_preun_service fuse
 
 %post
-%{_bindir}/test -x /sbin/makedev && /sbin/makedev fuse || :
 %_post_service fuse
 
 %postun
