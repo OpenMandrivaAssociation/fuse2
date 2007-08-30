@@ -5,7 +5,7 @@
 
 Name:           fuse
 Version:        2.7.0
-Release:        %mkrel 4
+Release:        %mkrel 5
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
@@ -34,6 +34,7 @@ Summary:        Header files and development libraries for libfuse2
 Group:          Development/C
 Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
 Requires:       %{libname} = %{epoch}:%{version}-%{release}
+Obsoletes:	%libname-devel
 
 %description -n %{libnamedev}
 Header files and development libraries for fuse.
@@ -50,6 +51,7 @@ Summary:        Static libraries for fuse
 Group:          Development/C
 Provides:       %{name}-static-devel = %{epoch}:%{version}-%{release}
 Requires:       %{libnamedev} = %{epoch}:%{version}-%{release}
+Obsoletes:	%libname-static-devel
 
 %description -n %{libnamestaticdev}
 Static libraries for fuse.
