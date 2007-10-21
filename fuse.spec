@@ -11,7 +11,7 @@ Summary:        Interface for userspace programs to export a virtual filesystem 
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
-Source0:        http://ovh.dl.sourceforge.net/fuse/fuse-%{version}.tar.gz
+Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source1:        fuse-udev.nodes
 Source2:        fuse-makedev.d-fuse
 Source4:        fuse.init
