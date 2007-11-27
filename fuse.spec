@@ -110,8 +110,8 @@ popd
 PACKAGE_VERSION="%{version}-%{release}"
 
 PACKAGE_NAME="%{name}"
-MAKE[0]="./configure --enable-kernel-module && %{make}"
-CLEAN="%{_bindir}/test -r Makefile && %{make} clean || :"
+MAKE[0]="./configure --enable-kernel-module && make"
+CLEAN="%{_bindir}/test -r Makefile && make clean || :"
 
 BUILT_MODULE_NAME[0]="\$PACKAGE_NAME"
 DEST_MODULE_LOCATION[0]="/kernel/fs/\$PACKAGE_NAME/"
