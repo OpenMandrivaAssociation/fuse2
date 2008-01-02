@@ -21,6 +21,7 @@ Requires(post): rpm-helper
 Requires(preun): rpm-helper
 BuildRequires:  kernel-source
 BuildRequires:  libtool
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
