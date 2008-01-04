@@ -4,8 +4,8 @@
 %define libnamestaticdev        %mklibname %{name} -d -s
 
 Name:           fuse
-Version:        2.7.1
-Release:        %mkrel 2
+Version:        2.7.2
+Release:        %mkrel 1
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
