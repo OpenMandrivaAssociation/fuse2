@@ -2,9 +2,10 @@
 %define libname                 %mklibname %{name} %{major}
 %define libnamedev              %mklibname %{name} -d
 %define libnamestaticdev        %mklibname %{name} -d -s
+%define ulock_major		1
 
 Name:           fuse
-Version:        2.7.2
+Version:        2.7.3
 Release:        %mkrel 1
 Epoch:          0
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
@@ -174,7 +175,10 @@ fi
 
 %files -n %{libname}
 %defattr(-,root,root,0755)
-/%{_lib}/*.so.*
+/%{_lib}/libfuse.so.%{major}
+/%{_lib}/libfuse.so.%{major}.*
+/%{_lib}/libulockmgr.so.%{ulock_major}
+/%{_lib}/libulockmgr.so.%{ulock_major}.*
 
 %files -n %{libnamedev}
 %defattr(-,root,root,0755)
