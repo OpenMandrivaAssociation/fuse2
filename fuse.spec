@@ -136,9 +136,13 @@ EOF
 %postun
 %_postun_groupdel fuse
 
+%if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
+%endif
 
 %post -n dkms-%{name}
 %{_sbindir}/dkms add -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
