@@ -22,7 +22,8 @@ Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 BuildRequires:  kernel-source
-BuildRequires:  libtool
+BuildRequires:	libtool
+BuildRequires:	gettext-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
