@@ -4,11 +4,11 @@
 %define libnamestaticdev        %mklibname %{name} -d -s
 %define ulock_major		1
 
+Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.7.3
-Release:        %mkrel 2
+Release:        %mkrel 3
 Epoch:          0
-Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
@@ -17,12 +17,13 @@ Source1:        fuse-udev.nodes
 Source2:        fuse-makedev.d-fuse
 Source4:        fuse.init
 Patch0:         fuse-udev_rules.patch
+Patch1:         fuse-linkage_fix.diff
 Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 BuildRequires:  kernel-source
 BuildRequires:  libtool
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -72,23 +73,30 @@ create and mount their own filesystem implementations.
 This package provides the kernel module part.
 
 %prep
+
 %setup -q
 %patch0 -p0
+%patch1 -p1
 %{__rm} util/init_script
 %{__cp} -a %{SOURCE4} util/init_script
 %{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
+%{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
-%{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure
-%{configure2_5x} --disable-kernel-module \
- --libdir=/%{_lib} \
- --bindir=/bin \
- --exec-prefix=/
-%{make}
+libtoolize --copy --force; aclocal; autoconf; automake
+
+%configure2_5x \
+    --disable-kernel-module \
+    --libdir=/%{_lib} \
+    --bindir=/bin \
+    --exec-prefix=/
+
+%make
 
 %install
 %{__rm} -rf %{buildroot}
-%{makeinstall_std}
+
+%makeinstall_std
 
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/udev/devices.d
 %{__cp} -a %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/devices.d/99-fuse.nodes
@@ -120,9 +128,6 @@ DEST_MODULE_LOCATION[0]="/kernel/fs/\$PACKAGE_NAME/"
 AUTOINSTALL=yes
 REMAKE_INITRD=no
 EOF
-
-%clean
-%{__rm} -rf %{buildroot}
 
 %pre
 %_pre_groupadd fuse
@@ -161,6 +166,9 @@ fi
 if [ $1 = 0 ]; then
   %{__sed} -i '/.*%{name}/d' %{_sysconfdir}/modprobe.preload
 fi
+
+%clean
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(0644,root,root,0755)
