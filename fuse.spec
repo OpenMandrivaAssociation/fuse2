@@ -7,7 +7,7 @@
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.7.4
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
@@ -21,6 +21,7 @@ Patch1:         fuse-linkage_fix.diff
 Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
+Obsoletes:      dkms-fuse <= 0:2.7.4-1mdv2009.0
 BuildRequires:  kernel-source
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
@@ -58,20 +59,6 @@ Obsoletes:	%libname-static-devel
 
 %description -n %{libnamestaticdev}
 Static libraries for fuse.
-
-%package -n dkms-%{name}
-Summary:        Linux kernel module for FUSE (Filesystem in Userspace)
-Group:          System/Kernel and hardware
-Requires(post): dkms
-Requires(preun): dkms
-
-%description -n dkms-%{name}
-FUSE (Filesystem in USErspace) is a simple interface for userspace
-programs to export a virtual filesystem to the linux kernel.  FUSE
-also aims to provide a secure method for non privileged users to
-create and mount their own filesystem implementations.
-
-This package provides the kernel module part.
 
 %prep
 
@@ -113,23 +100,6 @@ pushd %{buildroot}%{_bindir}
 %{__ln_s} /bin/ulockmgr_server ulockmgr_server
 popd
 
-%{__mkdir_p} %{buildroot}%{_usrsrc}
-%{__cp} -a kernel %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}
-
-%{__cat} > %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}/dkms.conf << EOF
-PACKAGE_VERSION="%{version}-%{release}"
-
-PACKAGE_NAME="%{name}"
-MAKE[0]="./configure --enable-kernel-module && make"
-CLEAN="%{_bindir}/test -r Makefile && make clean || :"
-
-BUILT_MODULE_NAME[0]="\$PACKAGE_NAME"
-DEST_MODULE_LOCATION[0]="/kernel/fs/\$PACKAGE_NAME/"
-
-AUTOINSTALL=yes
-REMAKE_INITRD=no
-EOF
-
 %pre
 %_pre_groupadd fuse
 
@@ -149,24 +119,6 @@ EOF
 %if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
 %endif
-
-%post -n dkms-%{name}
-%{_sbindir}/dkms add -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-%{_sbindir}/dkms build -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-%{_sbindir}/dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-
-if [ $1 = 1 ]; then
-  %{__grep} '[^#]*%{name}' %{_sysconfdir}/modprobe.preload || /bin/echo %{name} >> %{_sysconfdir}/modprobe.preload
-  /sbin/modprobe %{name}
-fi
-
-%preun -n dkms-%{name}
-%{_sbindir}/dkms remove -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all ||:
-
-%postun -n dkms-%{name}
-if [ $1 = 0 ]; then
-  %{__sed} -i '/.*%{name}/d' %{_sysconfdir}/modprobe.preload
-fi
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -203,7 +155,3 @@ fi
 %files -n %{libnamestaticdev}
 %defattr(0644,root,root,0755)
 /%{_lib}/libfuse.a
-
-%files -n dkms-%{name}
-%defattr(-,root,root,0755)
-%{_usrsrc}/%{name}-%{version}-%{release}
