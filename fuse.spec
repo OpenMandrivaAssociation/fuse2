@@ -7,7 +7,7 @@
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.7.4
-Release:        %mkrel 3
+Release:        %mkrel 4
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
@@ -15,8 +15,6 @@ URL:            http://sourceforge.net/projects/fuse/
 Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source1:        fuse-udev.nodes
 Source2:        fuse-makedev.d-fuse
-Source4:        fuse.init
-Patch0:         fuse-udev_rules.patch
 Patch1:         fuse-linkage_fix.diff
 Requires(post): makedev
 Requires(post): rpm-helper
@@ -63,10 +61,7 @@ Static libraries for fuse.
 %prep
 
 %setup -q
-%patch0 -p0
 %patch1 -p1
-%{__rm} util/init_script
-%{__cp} -a %{SOURCE4} util/init_script
 %{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
 %{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
@@ -100,17 +95,18 @@ pushd %{buildroot}%{_bindir}
 %{__ln_s} /bin/ulockmgr_server ulockmgr_server
 popd
 
-%pre
-%_pre_groupadd fuse
+rm -fr %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
+
 
 %preun
-%_preun_service fuse
+if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
+  chkconfig --del fuse
+fi
 
 %post
-%_post_service fuse
-
-%postun
-%_postun_groupdel fuse
+if [ ! -e /dev/fuse ]; then 
+ /sbin/create_static_dev_nodes /dev /etc/udev/devices.d/99-fuse.nodes 
+fi
 
 %if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
@@ -127,13 +123,11 @@ popd
 %defattr(0644,root,root,0755)
 %doc AUTHORS COPYING COPYING.LIB ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
 %attr(0755,root,root) /sbin/mount.fuse
-%attr(4755,root,fuse) /bin/fusermount
+%attr(4755,root,root) /bin/fusermount
 %attr(0755,root,root) /bin/ulockmgr_server
-%attr(0755,root,root) %{_initrddir}/fuse
 %config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
-%config(noreplace) %{_sysconfdir}/udev/rules.d/99-fuse.rules
 %config(noreplace) %{_sysconfdir}/udev/devices.d/99-fuse.nodes
 %exclude /%{_lib}/libulockmgr.a
 %exclude /%{_lib}/libulockmgr.la
