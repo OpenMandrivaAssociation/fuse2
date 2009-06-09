@@ -7,13 +7,12 @@
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.7.4
-Release:        %mkrel 4
+Release:        %mkrel 5
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
 Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
-Source1:        fuse-udev.nodes
 Source2:        fuse-makedev.d-fuse
 Patch1:         fuse-linkage_fix.diff
 Requires(post): makedev
@@ -81,8 +80,6 @@ libtoolize --copy --force; aclocal; autoconf; automake
 
 %makeinstall_std
 
-%{__mkdir_p} %{buildroot}%{_sysconfdir}/udev/devices.d
-%{__cp} -a %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/devices.d/99-fuse.nodes
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/makedev.d
 %{__cp} -a %{SOURCE2} %{buildroot}%{_sysconfdir}/makedev.d/z-fuse
 
@@ -103,10 +100,6 @@ if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
   chkconfig --del fuse
 fi
 
-%post
-if [ ! -e /dev/fuse ]; then 
- /sbin/create_static_dev_nodes /dev /etc/udev/devices.d/99-fuse.nodes 
-fi
 
 %if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
@@ -128,7 +121,6 @@ fi
 %config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
-%config(noreplace) %{_sysconfdir}/udev/devices.d/99-fuse.nodes
 %exclude /%{_lib}/libulockmgr.a
 %exclude /%{_lib}/libulockmgr.la
 
