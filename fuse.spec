@@ -6,15 +6,16 @@
 
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
-Version:        2.7.4
-Release:        %mkrel 6
+Version:        2.8.0
+Release:        %mkrel 1
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
 Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source2:        fuse-makedev.d-fuse
-Patch1:         fuse-linkage_fix.diff
+#Patch1:         fuse-linkage_fix.diff
+Patch0:		fuse-2.8.0-fix-str-fmt.patch
 Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
@@ -60,15 +61,14 @@ Static libraries for fuse.
 %prep
 
 %setup -q
-%patch1 -p1
+%patch0 -p0
 %{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
 %{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
-libtoolize --copy --force; aclocal; autoconf; automake
+#libtoolize --copy --force; aclocal; autoconf; automake
 
 %configure2_5x \
-    --disable-kernel-module \
     --libdir=/%{_lib} \
     --bindir=/bin \
     --exec-prefix=/
@@ -126,10 +126,8 @@ fi
 
 %files -n %{libname}
 %defattr(-,root,root,0755)
-/%{_lib}/libfuse.so.%{major}
-/%{_lib}/libfuse.so.%{major}.*
-/%{_lib}/libulockmgr.so.%{ulock_major}
-/%{_lib}/libulockmgr.so.%{ulock_major}.*
+/%{_lib}/libfuse.so.%{major}*
+/%{_lib}/libulockmgr.so.%{ulock_major}*
 
 %files -n %{libnamedev}
 %defattr(-,root,root,0755)
