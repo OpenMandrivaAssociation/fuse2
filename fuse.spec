@@ -6,7 +6,7 @@
 
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
-Version:        2.8.0
+Version:        2.8.1
 Release:        %mkrel 1
 Epoch:          0
 License:        GPL
@@ -14,7 +14,6 @@ Group:          System/Libraries
 URL:            http://sourceforge.net/projects/fuse/
 Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source2:        fuse-makedev.d-fuse
-#Patch1:         fuse-linkage_fix.diff
 Patch0:		fuse-2.8.0-fix-str-fmt.patch
 Requires(post): makedev
 Requires(post): rpm-helper
