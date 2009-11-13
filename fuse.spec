@@ -7,7 +7,7 @@
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.8.1
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
@@ -19,7 +19,6 @@ Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Obsoletes:      dkms-fuse <= 0:2.7.4-1mdv2009.0
-BuildRequires:  kernel-source
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
