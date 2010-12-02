@@ -7,7 +7,7 @@
 Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
 Name:           fuse
 Version:        2.8.4
-Release:        %mkrel 1
+Release:        %mkrel 2
 Epoch:          0
 License:        GPL
 Group:          System/Libraries
