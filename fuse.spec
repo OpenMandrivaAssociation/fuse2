@@ -121,8 +121,6 @@ fi
 %config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
-%exclude /%{_lib}/libulockmgr.a
-%exclude /%{_lib}/libulockmgr.la
 
 %files -n %{libname}
 %defattr(-,root,root,0755)
@@ -132,10 +130,10 @@ fi
 %files -n %{libnamedev}
 %defattr(-,root,root,0755)
 %{_includedir}/*
-/%{_lib}/libfuse.la
+/%{_lib}/*.la
 /%{_lib}/*.so
 %{_libdir}/pkgconfig/*
 
 %files -n %{libnamestaticdev}
 %defattr(0644,root,root,0755)
-/%{_lib}/libfuse.a
+/%{_lib}/*.a
