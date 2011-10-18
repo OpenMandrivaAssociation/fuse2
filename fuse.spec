@@ -16,6 +16,7 @@ Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{vers
 Source2:        fuse-makedev.d-fuse
 Patch0:		fuse-2.8.0-fix-str-fmt.patch
 Patch1:		mount-readlink-hang-workaround.patch
+Patch2:		fuse-2.8.6-usegnu.patch
 Requires(post): makedev
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
@@ -62,6 +63,8 @@ Static libraries for fuse.
 %setup -q
 %patch0 -p0
 %patch1 -p1
+%patch2 -p1
+
 %{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
 %{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
