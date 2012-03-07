@@ -44,7 +44,6 @@ Group:		Development/C
 License:	LGPLv2+
 Provides:	%{name}-devel = %{EVRD}
 Requires:	%{libname} = %{EVRD}
-Obsoletes:	%{libname}-devel
 
 %description -n	%{devname}
 Header files and development libraries for fuse.
@@ -55,7 +54,6 @@ Group:		Development/C
 License:	LGPLv2+
 Provides:	%{name}-static-devel = %{EVRD}
 Requires:	%{devname} = %{EVRD}
-Obsoletes:	%{libname}-static-devel
 
 %description -n	%{static}
 Static libraries for fuse.
