@@ -9,7 +9,7 @@ Name:		fuse
 Version:	2.8.7
 Release:	1
 Epoch:		0
-License:	GPL
+License:	GPLv2+
 Group:		System/Libraries
 URL:		http://sourceforge.net/projects/fuse/
 Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
@@ -33,6 +33,7 @@ create and mount their own filesystem implementations.
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
+License:	LGPLv2+
 Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 Obsoletes:	%{libname}-devel
@@ -43,6 +44,7 @@ Header files and development libraries for fuse.
 %package -n	%{libname}
 Summary:	Libraries for fuse
 Group:		Development/C
+License:	LGPLv2+
 
 %description -n	%{libname}
 Libraries for fuse.
@@ -50,6 +52,7 @@ Libraries for fuse.
 %package -n	%{static}
 Summary:	Static libraries for fuse
 Group:		Development/C
+License:	LGPLv2+
 Provides:	%{name}-static-devel = %{epoch}:%{version}-%{release}
 Requires:	%{devname} = %{epoch}:%{version}-%{release}
 Obsoletes:	%{libname}-static-devel
@@ -94,7 +97,7 @@ if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
 fi
 
 %files
-%doc AUTHORS COPYING COPYING.LIB ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
+%doc AUTHORS ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
 %attr(0755,root,root) /sbin/mount.fuse
 %attr(4755,root,root) /bin/fusermount
 %attr(0755,root,root) /bin/ulockmgr_server
