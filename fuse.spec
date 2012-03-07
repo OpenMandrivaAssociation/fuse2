@@ -30,6 +30,14 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
+%package -n	%{libname}
+Summary:	Libraries for fuse
+Group:		Development/C
+License:	LGPLv2+
+
+%description -n	%{libname}
+Libraries for fuse.
+
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
@@ -40,14 +48,6 @@ Obsoletes:	%{libname}-devel
 
 %description -n	%{devname}
 Header files and development libraries for fuse.
-
-%package -n	%{libname}
-Summary:	Libraries for fuse
-Group:		Development/C
-License:	LGPLv2+
-
-%description -n	%{libname}
-Libraries for fuse.
 
 %package -n	%{static}
 Summary:	Static libraries for fuse
