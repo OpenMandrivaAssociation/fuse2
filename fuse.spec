@@ -42,8 +42,8 @@ Libraries for fuse.
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
 License:	LGPLv2+
-Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
-Requires:	%{libname} = %{epoch}:%{version}-%{release}
+Provides:	%{name}-devel = %{EVRD}
+Requires:	%{libname} = %{EVRD}
 Obsoletes:	%{libname}-devel
 
 %description -n	%{devname}
@@ -53,8 +53,8 @@ Header files and development libraries for fuse.
 Summary:	Static libraries for fuse
 Group:		Development/C
 License:	LGPLv2+
-Provides:	%{name}-static-devel = %{epoch}:%{version}-%{release}
-Requires:	%{devname} = %{epoch}:%{version}-%{release}
+Provides:	%{name}-static-devel = %{EVRD}
+Requires:	%{devname} = %{EVRD}
 Obsoletes:	%{libname}-static-devel
 
 %description -n	%{static}
