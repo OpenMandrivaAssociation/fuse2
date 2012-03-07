@@ -97,7 +97,7 @@ if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
 fi
 
 %files
-%doc AUTHORS ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
+%doc AUTHORS ChangeLog FAQ Filesystems NEWS README README.NFS
 %attr(0755,root,root) /sbin/mount.fuse
 %attr(4755,root,root) /bin/fusermount
 %attr(0755,root,root) /bin/ulockmgr_server
