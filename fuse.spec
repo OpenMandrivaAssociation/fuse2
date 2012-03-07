@@ -1,29 +1,28 @@
-%define major                   2
-%define libname                 %mklibname %{name} %{major}
-%define libnamedev              %mklibname %{name} -d
-%define libnamestaticdev        %mklibname %{name} -d -s
-%define ulock_major		1
+%define	major	2
+%define	libname	%mklibname %{name} %{major}
+%define	devname	%mklibname %{name} -d
+%define	static	%mklibname %{name} -d -s
+%define	ulmajor	1
 
-Summary:        Interface for userspace programs to export a virtual filesystem to the kernel
-Name:           fuse
-Version:        2.8.6
-Release:        %mkrel 1
-Epoch:          0
-License:        GPL
-Group:          System/Libraries
-URL:            http://sourceforge.net/projects/fuse/
-Source0:        http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
-Source2:        fuse-makedev.d-fuse
+Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
+Name:		fuse
+Version:	2.8.6
+Release:	1
+Epoch:		0
+License:	GPL
+Group:		System/Libraries
+URL:		http://sourceforge.net/projects/fuse/
+Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
+Source2:	fuse-makedev.d-fuse
 Patch0:		fuse-2.8.0-fix-str-fmt.patch
 Patch1:		mount-readlink-hang-workaround.patch
 Patch2:		fuse-2.8.6-usegnu.patch
-Requires(post): makedev
-Requires(post): rpm-helper
-Requires(preun): rpm-helper
-Obsoletes:      dkms-fuse <= 0:2.7.4-1mdv2009.0
+Requires(post):	makedev
+Requires(post):	rpm-helper
+Requires(preun):rpm-helper
+Obsoletes:	dkms-fuse <= 0:2.7.4-1mdv2009.0
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -31,71 +30,62 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
-%package -n %{libnamedev}
-Summary:        Header files and development libraries for libfuse2
-Group:          Development/C
-Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
-Requires:       %{libname} = %{epoch}:%{version}-%{release}
+%package -n	%{devname}
+Summary:	Header files and development libraries for libfuse2
+Group:		Development/C
+Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
+Requires:	%{libname} = %{epoch}:%{version}-%{release}
 Obsoletes:	%{libname}-devel
 
-%description -n %{libnamedev}
+%description -n	%{devname}
 Header files and development libraries for fuse.
 
-%package -n %{libname}
-Summary:        Libraries for fuse
-Group:          Development/C
+%package -n	%{libname}
+Summary:	Libraries for fuse
+Group:		Development/C
 
-%description -n %{libname}
+%description -n	%{libname}
 Libraries for fuse.
 
-%package -n %{libnamestaticdev}
-Summary:        Static libraries for fuse
-Group:          Development/C
-Provides:       %{name}-static-devel = %{epoch}:%{version}-%{release}
-Requires:       %{libnamedev} = %{epoch}:%{version}-%{release}
+%package -n	%{static}
+Summary:	Static libraries for fuse
+Group:		Development/C
+Provides:	%{name}-static-devel = %{epoch}:%{version}-%{release}
+Requires:	%{devname} = %{epoch}:%{version}-%{release}
 Obsoletes:	%{libname}-static-devel
 
-%description -n %{libnamestaticdev}
+%description -n	%{static}
 Static libraries for fuse.
 
 %prep
-
 %setup -q
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
 
-%{__sed} -i 's|mknod|/bin/echo Disabled: mknod |g' util/Makefile.in
-%{__perl} -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
+sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
+perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
-#libtoolize --copy --force; aclocal; autoconf; automake
-
-%configure2_5x \
-    --libdir=/%{_lib} \
-    --bindir=/bin \
-    --exec-prefix=/
-
+%configure2_5x	--libdir=/%{_lib} \
+		--bindir=/bin \
+		--exec-prefix=/
 %make
 
 %install
-%{__rm} -rf %{buildroot}
-
 %makeinstall_std
 
-%{__mkdir_p} %{buildroot}%{_sysconfdir}/makedev.d
-%{__cp} -a %{SOURCE2} %{buildroot}%{_sysconfdir}/makedev.d/z-fuse
+install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/makedev.d/z-fuse
 
-%{__mkdir_p} %{buildroot}%{_libdir}
-%{__mv} %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
+mkdir -p  %{buildroot}%{_libdir}
+mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
 
-%{__mkdir_p} %{buildroot}%{_bindir}
-pushd %{buildroot}%{_bindir}
-%{__ln_s} /bin/fusermount fusermount
-%{__ln_s} /bin/ulockmgr_server ulockmgr_server
-popd
+# XXX: have a hard time believing that these symlinks are actually needed,,,
+mkdir -p %{buildroot}%{_bindir}
+ln -s /bin/fusermount %{buildroot}%{_bindir}/fusermount
+ln -s /bin/ulockmgr_server %{buildroot}%{_bindir}/ulockmgr_server
 
-rm -fr %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
+rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
 
 
 %preun
@@ -103,20 +93,7 @@ if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
   chkconfig --del fuse
 fi
 
-
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%clean
-%{__rm} -rf %{buildroot}
-
 %files
-%defattr(0644,root,root,0755)
 %doc AUTHORS COPYING COPYING.LIB ChangeLog FAQ Filesystems INSTALL NEWS README README.NFS
 %attr(0755,root,root) /sbin/mount.fuse
 %attr(4755,root,root) /bin/fusermount
@@ -126,17 +103,14 @@ fi
 %{_bindir}/ulockmgr_server
 
 %files -n %{libname}
-%defattr(-,root,root,0755)
 /%{_lib}/libfuse.so.%{major}*
-/%{_lib}/libulockmgr.so.%{ulock_major}*
+/%{_lib}/libulockmgr.so.%{ulmajor}*
 
-%files -n %{libnamedev}
-%defattr(-,root,root,0755)
+%files -n %{devname}
 %{_includedir}/*
 /%{_lib}/*.la
 /%{_lib}/*.so
 %{_libdir}/pkgconfig/*
 
-%files -n %{libnamestaticdev}
-%defattr(0644,root,root,0755)
+%files -n %{static}
 /%{_lib}/*.a
