@@ -6,17 +6,15 @@
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
-Version:	2.8.7
-Release:	2
+Version:	2.9.0
+Release:	1
 Epoch:		0
 License:	GPLv2+
 Group:		System/Libraries
 URL:		http://sourceforge.net/projects/fuse/
 Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source2:	fuse-makedev.d-fuse
-Patch0:		fuse-2.8.0-fix-str-fmt.patch
-Patch1:		mount-readlink-hang-workaround.patch
-Patch2:		fuse-2.8.6-usegnu.patch
+Patch0:		mount-readlink-hang-workaround.patch
 Requires(post):	makedev
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
@@ -60,9 +58,7 @@ Static libraries for fuse.
 
 %prep
 %setup -q
-%patch0 -p0
-%patch1 -p1
-%patch2 -p1
+%patch0 -p1
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
@@ -102,6 +98,9 @@ fi
 %config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
+%{_mandir}/man1/fusermount.1.*
+%{_mandir}/man1/ulockmgr_server.1.*
+%{_mandir}/man8/mount.fuse.8.*
 
 %files -n %{libname}
 /%{_lib}/libfuse.so.%{major}*
@@ -109,7 +108,6 @@ fi
 
 %files -n %{devname}
 %{_includedir}/*
-/%{_lib}/*.la
 /%{_lib}/*.so
 %{_libdir}/pkgconfig/*
 
