@@ -6,13 +6,13 @@
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
-Version:	2.9.0
+Version:	2.9.1
 Release:	1
 Epoch:		0
 License:	GPLv2+
 Group:		System/Libraries
 URL:		http://sourceforge.net/projects/fuse/
-Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
+Source0:	http://downloads.sourceforge.net/project/fuse/fuse-2.X/%{version}/%{name}-%{version}.tar.gz
 Source2:	fuse-makedev.d-fuse
 Patch0:		mount-readlink-hang-workaround.patch
 Requires(post):	makedev
