@@ -7,15 +7,13 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.1
-Release:	1
+Release:	2
 Epoch:		0
 License:	GPLv2+
 Group:		System/Libraries
 URL:		http://sourceforge.net/projects/fuse/
 Source0:	http://downloads.sourceforge.net/project/fuse/fuse-2.X/%{version}/%{name}-%{version}.tar.gz
-Source2:	fuse-makedev.d-fuse
 Patch0:		mount-readlink-hang-workaround.patch
-Requires(post):	makedev
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 Obsoletes:	dkms-fuse <= 0:2.7.4-1mdv2009.0
@@ -72,8 +70,6 @@ perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 %install
 %makeinstall_std
 
-install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/makedev.d/z-fuse
-
 mkdir -p  %{buildroot}%{_libdir}
 mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
 
@@ -95,7 +91,6 @@ fi
 %attr(0755,root,root) /sbin/mount.fuse
 %attr(4755,root,root) /bin/fusermount
 %attr(0755,root,root) /bin/ulockmgr_server
-%config(noreplace) %{_sysconfdir}/makedev.d/z-fuse
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
 %{_mandir}/man1/fusermount.1.*
