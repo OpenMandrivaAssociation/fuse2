@@ -7,7 +7,7 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.1
-Release:	2
+Release:	1
 Epoch:		0
 License:	GPLv2+
 Group:		System/Libraries
@@ -65,7 +65,7 @@ perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 %configure2_5x	--libdir=/%{_lib} \
 		--bindir=/bin \
 		--exec-prefix=/
-%make
+%make CC="gcc -fuse-ld=bfd"
 
 %install
 %makeinstall_std
