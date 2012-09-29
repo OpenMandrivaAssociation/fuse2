@@ -79,8 +79,10 @@ Group:		Development/C
 License:	LGPLv2+
 Provides:	%{name}-devel = %{EVRD}
 Requires:	%{libname} = %{EVRD}
+Requires:	%{libuml} = %{EVRD}
 %if %{with uclibc}
 Requires:	uclibc-%{libname} = %{version}
+Requires:	uclibc-%{libuml} = %{version}
 %endif
 
 %description -n	%{devname}
