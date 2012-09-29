@@ -6,7 +6,7 @@ Version:	2.9.1
 Release:	2
 Epoch:		0
 License:	GPLv2+
-Group:		System/Libraries
+Group:		System/Base
 URL:		http://sourceforge.net/projects/fuse/
 Source0:	http://downloads.sourceforge.net/project/fuse/fuse-2.X/%{version}/%{name}-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
@@ -27,7 +27,7 @@ create and mount their own filesystem implementations.
 
 %package -n	uclibc-%{name}
 Summary:	uClibc build of fuse
-Group:		System/Libraries
+Group:		System/Base
 
 %description -n	uclibc-%{name}
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -39,7 +39,7 @@ create and mount their own filesystem implementations.
 %define	libname	%mklibname %{name} %{major}
 %package -n	%{libname}
 Summary:	Libraries for fuse
-Group:		Development/C
+Group:		System/Libraries
 License:	LGPLv2+
 Conflicts:	%{libname} < 2.9.1-2
 
@@ -48,7 +48,7 @@ Libraries for fuse.
 
 %package -n	uclibc-%{libname}
 Summary:	Libraries for fuse (uClibc build)
-Group:		Development/C
+Group:		System/Libraries
 License:	LGPLv2+
 
 %description -n	uclibc-%{libname}
