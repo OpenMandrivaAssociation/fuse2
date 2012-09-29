@@ -4,10 +4,12 @@
 %define	static	%mklibname %{name} -d -s
 %define	ulmajor	1
 
+%bcond_without	uclibc
+
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.1
-Release:	1
+Release:	2
 Epoch:		0
 License:	GPLv2+
 Group:		System/Libraries
@@ -19,8 +21,21 @@ Requires(preun):rpm-helper
 Obsoletes:	dkms-fuse <= 0:2.7.4-1mdv2009.0
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
+%if %{with uclibc}
+BuildRequires:	uClibc-devel >= 0.9.33.2-9
+%endif
 
 %description
+FUSE (Filesystem in USErspace) is a simple interface for userspace
+programs to export a virtual filesystem to the linux kernel.  FUSE
+also aims to provide a secure method for non privileged users to
+create and mount their own filesystem implementations.
+
+%package -n	uclibc-%{name}
+Summary:	uClibc build of fuse
+Group:		System/Libraries
+
+%description -n	uclibc-%{name}
 FUSE (Filesystem in USErspace) is a simple interface for userspace
 programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
@@ -34,12 +49,23 @@ License:	LGPLv2+
 %description -n	%{libname}
 Libraries for fuse.
 
+%package -n	uclibc-%{libname}
+Summary:	Libraries for fuse (uClibc build)
+Group:		Development/C
+License:	LGPLv2+
+
+%description -n	uclibc-%{libname}
+Libraries for fuse.
+
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
 License:	LGPLv2+
 Provides:	%{name}-devel = %{EVRD}
 Requires:	%{libname} = %{EVRD}
+%if %{with uclibc}
+Requires:	uclibc-%{libname} = %{version}
+%endif
 
 %description -n	%{devname}
 Header files and development libraries for fuse.
@@ -62,13 +88,42 @@ sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
-%configure2_5x	--libdir=/%{_lib} \
+CONFIGURE_TOP=$PWD
+%if %{with uclibc}
+mkdir -p uclibc
+pushd uclibc
+%configure2_5x	CC="%{uclibc_cc} -fuse-ld=bfd" \
+		CFLAGS="%{uclibc_cflags}" \
+		--libdir=%{uclibc_root}%{_libdir} \
+		--bindir=%{uclibc_root}/bin \
+		--sbindir=%{uclibc_root}/sbin \
+		--exec-prefix=/
+%make V=2
+popd
+%endif
+
+mkdir -p system
+pushd system
+%configure2_5x	CC="gcc -fuse-ld=bfd" \
+		--libdir=/%{_lib} \
 		--bindir=/bin \
 		--exec-prefix=/
-%make CC="gcc -fuse-ld=bfd"
+%make V=2 CC="gcc -fuse-ld=bfd"
+popd
 
 %install
-%makeinstall_std
+%if %{with uclibc}
+%makeinstall_std -C uclibc
+install -d %{buildroot}%{uclibc_root}/%{_lib}
+for l in libfuse.so libulockmgr.so; do
+	rm %{buildroot}%{uclibc_root}%{_libdir}/${l}
+	mv %{buildroot}%{uclibc_root}%{_libdir}/${l}.*.* %{buildroot}%{uclibc_root}/%{_lib}
+	ln -sr %{buildroot}%{uclibc_root}/%{_lib}/${l}.*.* %{buildroot}%{uclibc_root}%{_libdir}/${l}
+done
+rm -r %{buildroot}%{uclibc_root}%{_libdir}/pkgconfig
+%endif
+
+%makeinstall_std -C system
 
 mkdir -p  %{buildroot}%{_libdir}
 mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
@@ -97,14 +152,32 @@ fi
 %{_mandir}/man1/ulockmgr_server.1.*
 %{_mandir}/man8/mount.fuse.8.*
 
+%if %{with uclibc}
+%files -n uclibc-%{name}
+%attr(4755,root,root) %{uclibc_root}/bin/fusermount
+%attr(0755,root,root) %{uclibc_root}/bin/ulockmgr_server
+%endif
+
 %files -n %{libname}
 /%{_lib}/libfuse.so.%{major}*
 /%{_lib}/libulockmgr.so.%{ulmajor}*
 
+%if %{with uclibc}
+%files -n uclibc-%{libname}
+%{uclibc_root}/%{_lib}/libfuse.so.%{major}*
+%{uclibc_root}/%{_lib}/libulockmgr.so.%{ulmajor}*
+%endif
+
 %files -n %{devname}
 %{_includedir}/*
 /%{_lib}/*.so
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/*.so
+%endif
 %{_libdir}/pkgconfig/*
 
 %files -n %{static}
 /%{_lib}/*.a
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/*.a
+%endif
