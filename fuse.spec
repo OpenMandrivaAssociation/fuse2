@@ -122,10 +122,9 @@ popd
 mkdir -p system
 pushd system
 %configure2_5x	CC="gcc -fuse-ld=bfd" \
-		--libdir=/%{_lib} \
 		--bindir=/bin \
 		--exec-prefix=/
-%make V=2 CC="gcc -fuse-ld=bfd"
+%make V=2
 popd
 
 %install
@@ -141,9 +140,12 @@ rm -r %{buildroot}%{uclibc_root}%{_libdir}/pkgconfig
 %endif
 
 %makeinstall_std -C system
-
-mkdir -p  %{buildroot}%{_libdir}
-mv %{buildroot}/%{_lib}/pkgconfig %{buildroot}%{_libdir}
+install -d %{buildroot}/%{_lib}
+for l in libfuse.so libulockmgr.so; do
+	rm %{buildroot}%{_libdir}/${l}
+	mv %{buildroot}%{_libdir}/${l}.*.* %{buildroot}/%{_lib}
+	ln -sr %{buildroot}/%{_lib}/${l}.*.* %{buildroot}%{_libdir}/${l}
+done
 
 # XXX: have a hard time believing that these symlinks are actually needed,,,
 mkdir -p %{buildroot}%{_bindir}
@@ -193,14 +195,14 @@ fi
 
 %files -n %{devname}
 %{_includedir}/*
-/%{_lib}/*.so
+%{_libdir}/*.so
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/*.so
 %endif
 %{_libdir}/pkgconfig/*
 
 %files -n %{static}
-/%{_lib}/*.a
+%{_libdir}/*.a
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/*.a
 %endif
