@@ -82,7 +82,7 @@ Requires:	%{libname} = %{EVRD}
 Requires:	%{libulm} = %{EVRD}
 %if %{with uclibc}
 Requires:	uclibc-%{libname} = %{version}
-Requires:	uclibc-%{libullm = %{version}
+Requires:	uclibc-%{libulm} = %{version}
 %endif
 
 %description -n	%{devname}
