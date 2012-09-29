@@ -1,9 +1,3 @@
-%define	major	2
-%define	libname	%mklibname %{name} %{major}
-%define	devname	%mklibname %{name} -d
-%define	static	%mklibname %{name} -d -s
-%define	ulmajor	1
-
 %bcond_without	uclibc
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
@@ -41,10 +35,13 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
+%define	major	2
+%define	libname	%mklibname %{name} %{major}
 %package -n	%{libname}
 Summary:	Libraries for fuse
 Group:		Development/C
 License:	LGPLv2+
+Conflicts:	%{libname} < 2.9.1-2
 
 %description -n	%{libname}
 Libraries for fuse.
@@ -57,6 +54,25 @@ License:	LGPLv2+
 %description -n	uclibc-%{libname}
 Libraries for fuse.
 
+%define	ulmajor	1
+%define	libulm	%mklibname ulockmgr %{ulmajor}
+%package -n	%{libulm}
+Summary:	libulockmgr for fuse
+Group:		System/Libraries
+License:	LGPLv2+
+
+%description -n	%{libname}
+Libraries for fuse.
+
+%package -n	uclibc-%{libulm}
+Summary:	libulockmgr for fuse (uClibc build)
+Group:		System/Libraries
+License:	LGPLv2+
+
+%description -n	uclibc-%{libulm}
+Libraries for fuse.
+
+%define	devname	%mklibname %{name} -d
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
@@ -70,6 +86,7 @@ Requires:	uclibc-%{libname} = %{version}
 %description -n	%{devname}
 Header files and development libraries for fuse.
 
+%define	static	%mklibname %{name} -d -s
 %package -n	%{static}
 Summary:	Static libraries for fuse
 Group:		Development/C
@@ -160,11 +177,17 @@ fi
 
 %files -n %{libname}
 /%{_lib}/libfuse.so.%{major}*
-/%{_lib}/libulockmgr.so.%{ulmajor}*
 
 %if %{with uclibc}
 %files -n uclibc-%{libname}
 %{uclibc_root}/%{_lib}/libfuse.so.%{major}*
+%endif
+
+%files -n %{libulm}
+/%{_lib}/libulockmgr.so.%{ulmajor}*
+
+%if %{with uclibc}
+%files -n uclibc-%{libulm}
 %{uclibc_root}/%{_lib}/libulockmgr.so.%{ulmajor}*
 %endif
 
