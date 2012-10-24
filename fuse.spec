@@ -61,7 +61,7 @@ Summary:	libulockmgr for fuse
 Group:		System/Libraries
 License:	LGPLv2+
 
-%description -n	%{libname}
+%description -n	%{libulm}
 Libraries for fuse.
 
 %package -n	uclibc-%{libulm}
