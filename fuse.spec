@@ -16,7 +16,7 @@ Obsoletes:	dkms-fuse <= 0:2.7.4-1mdv2009.0
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
 %if %{with uclibc}
-BuildRequires:	uClibc-devel >= 0.9.33.2-9
+BuildRequires:	uClibc-devel >= 0.9.33.2-16
 %endif
 
 %description
@@ -111,9 +111,7 @@ CONFIGURE_TOP=$PWD
 %if %{with uclibc}
 mkdir -p uclibc
 pushd uclibc
-%configure2_5x	CC="%{uclibc_cc} -fuse-ld=bfd" \
-		CFLAGS="%{uclibc_cflags}" \
-		--libdir=%{uclibc_root}%{_libdir} \
+%uclibc_configure \
 		--bindir=%{uclibc_root}/bin \
 		--sbindir=%{uclibc_root}/sbin \
 		--exec-prefix=/
