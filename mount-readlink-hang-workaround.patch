@@ -1,0 +1,19 @@
+diff -ur fuse-2.8.3.orig/lib/mount_util.c fuse-2.8.3/lib/mount_util.c
+--- fuse-2.8.3.orig/lib/mount_util.c	2010-02-01 12:35:47.000000000 +0100
++++ fuse-2.8.3/lib/mount_util.c	2010-02-02 19:49:21.000000000 +0100
+@@ -105,13 +105,14 @@
+ 			progname, strerror(errno));
+ 		exit(1);
+ 	}
++#if 0
+ 	res = waitpid(res, &status, 0);
+ 	if (res == -1)
+ 		fprintf(stderr, "%s: waitpid: %s\n", progname, strerror(errno));
+ 
+ 	if (status != 0)
+ 		res = -1;
+-
++#endif
+  out_restore:
+ 	sigprocmask(SIG_SETMASK, &oldmask, NULL);
+ 
