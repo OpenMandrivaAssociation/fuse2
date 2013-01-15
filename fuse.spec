@@ -11,6 +11,7 @@ URL:		http://sourceforge.net/projects/fuse/
 Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Source2:	fuse-makedev.d-fuse
 Patch0:		mount-readlink-hang-workaround.patch
+Patch1:		fuse-2.9.2-automake-1.13.patch
 Requires(post):	makedev
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
@@ -104,7 +105,7 @@ Static libraries for fuse.
 
 %prep
 %setup -q
-%patch0 -p1
+%apply_patches
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
