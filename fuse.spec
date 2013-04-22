@@ -1,24 +1,29 @@
+%define	major	2
+%define	ulmajor	1
+%define	libname	%mklibname %{name} %{major}
+%define	libulm	%mklibname ulockmgr %{ulmajor}
+%define	devname	%mklibname %{name} -d
+%define	static	%mklibname %{name} -d -s
+
 %bcond_without	uclibc
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.2
 Release:	3
-Epoch:		0
 License:	GPLv2+
 Group:		System/Base
-URL:		http://sourceforge.net/projects/fuse/
+Url:		http://sourceforge.net/projects/fuse/
 Source0:	http://ovh.dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
 Patch1:		fuse-2.9.2-automake-1.13.patch
-Requires(post):	rpm-helper
-Requires(preun):rpm-helper
-Obsoletes:	dkms-fuse <= 0:2.7.4-1mdv2009.0
+
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-16
 %endif
+Requires(post,preun):	rpm-helper
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -36,9 +41,6 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
-%define	major	2
-%define	libname	%mklibname %{name} %{major}
-
 %package -n	%{libname}
 Summary:	Libraries for fuse
 Group:		System/Libraries
@@ -55,8 +57,6 @@ License:	LGPLv2+
 %description -n	uclibc-%{libname}
 Libraries for fuse.
 
-%define	ulmajor	1
-%define	libulm	%mklibname ulockmgr %{ulmajor}
 %package -n	%{libulm}
 Summary:	libulockmgr for fuse
 Group:		System/Libraries
@@ -74,7 +74,6 @@ License:	LGPLv2+
 %description -n	uclibc-%{libulm}
 Libraries for fuse.
 
-%define	devname	%mklibname %{name} -d
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
@@ -90,7 +89,6 @@ Requires:	uclibc-%{libulm} = %{version}
 %description -n	%{devname}
 Header files and development libraries for fuse.
 
-%define	static	%mklibname %{name} -d -s
 %package -n	%{static}
 Summary:	Static libraries for fuse
 Group:		Development/C
@@ -106,7 +104,7 @@ Static libraries for fuse.
 %apply_patches
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
-perl -pi -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
+sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
 CONFIGURE_TOP=$PWD
@@ -114,19 +112,20 @@ CONFIGURE_TOP=$PWD
 mkdir -p uclibc
 pushd uclibc
 %uclibc_configure \
-		CC="%{uclibc_cc} -fuse-ld=bfd" \
-		--bindir=%{uclibc_root}/bin \
-		--sbindir=%{uclibc_root}/sbin \
-		--exec-prefix=/
+	CC="%{uclibc_cc} -fuse-ld=bfd" \
+	--bindir=%{uclibc_root}/bin \
+	--sbindir=%{uclibc_root}/sbin \
+	--exec-prefix=/
 %make
 popd
 %endif
 
 mkdir -p system
 pushd system
-%configure2_5x	CC="gcc -fuse-ld=bfd" \
-		--bindir=/bin \
-		--exec-prefix=/
+%configure2_5x \
+	CC="gcc -fuse-ld=bfd" \
+	--bindir=/bin \
+	--exec-prefix=/
 %make
 popd
 
@@ -157,10 +156,9 @@ ln -s /bin/ulockmgr_server %{buildroot}%{_bindir}/ulockmgr_server
 
 rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
 
-
 %preun
 if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
-  chkconfig --del fuse
+	chkconfig --del fuse
 fi
 
 %files
@@ -209,3 +207,4 @@ fi
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/*.a
 %endif
+
