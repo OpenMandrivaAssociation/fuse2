@@ -123,7 +123,7 @@ popd
 mkdir -p system
 pushd system
 %configure2_5x \
-	CC="gcc -fuse-ld=bfd" \
+	CC="%{__cc} -fuse-ld=bfd" \
 	--bindir=/bin \
 	--exec-prefix=/
 %make
