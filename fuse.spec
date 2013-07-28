@@ -16,7 +16,6 @@ Group:		System/Base
 Url:		http://sourceforge.net/projects/fuse/
 Source0:	http://downloads.sourceforge.net/project/fuse/%{name}-2.X/%{version}/%{name}-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
-#Patch1:		fuse-2.9.2-automake-1.13.patch
 
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
