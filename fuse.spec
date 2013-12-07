@@ -10,7 +10,7 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.3
-Release:	2
+Release:	3
 License:	GPLv2+
 Group:		System/Base
 Url:		http://sourceforge.net/projects/fuse/
