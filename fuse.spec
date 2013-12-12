@@ -114,7 +114,9 @@ pushd uclibc
 	CC="%{uclibc_cc} -fuse-ld=bfd" \
 	--bindir=%{uclibc_root}/bin \
 	--sbindir=%{uclibc_root}/sbin \
-	--exec-prefix=/
+	--exec-prefix=/ \
+    --enable-static
+    
 %make
 popd
 %endif
@@ -124,7 +126,9 @@ pushd system
 %configure2_5x \
 	CC="%{__cc} -fuse-ld=bfd" \
 	--bindir=/bin \
-	--exec-prefix=/
+	--exec-prefix=/ \
+    --enable-static
+
 %make
 popd
 
