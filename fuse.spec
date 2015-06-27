@@ -10,7 +10,7 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.3
-Release:	8
+Release:	9
 License:	GPLv2+
 Group:		System/Base
 Url:		http://sourceforge.net/projects/fuse/
@@ -23,8 +23,9 @@ BuildRequires:	libtool
 BuildRequires:	gettext-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-16
+BuildRequires:	uclibc-gettext-devel
 %endif
-Requires(post,preun):	rpm-helper
+Requires(preun):	rpm-helper
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -32,6 +33,7 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
+%if %{with uclibc}
 %package -n	uclibc-%{name}
 Summary:	uClibc build of fuse
 Group:		System/Base
@@ -41,6 +43,7 @@ FUSE (Filesystem in USErspace) is a simple interface for userspace
 programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
+%endif
 
 %package -n	%{libname}
 Summary:	Libraries for fuse
@@ -50,6 +53,7 @@ License:	LGPLv2+
 %description -n	%{libname}
 Libraries for fuse.
 
+%if %{with uclibc}
 %package -n	uclibc-%{libname}
 Summary:	Libraries for fuse (uClibc build)
 Group:		System/Libraries
@@ -57,6 +61,7 @@ License:	LGPLv2+
 
 %description -n	uclibc-%{libname}
 Libraries for fuse.
+%endif
 
 %package -n	%{libulm}
 Summary:	libulockmgr for fuse
@@ -67,6 +72,7 @@ Conflicts:	%{libname} < 2.9.2-1
 %description -n	%{libulm}
 Libraries for fuse.
 
+%if %{with uclibc}
 %package -n	uclibc-%{libulm}
 Summary:	libulockmgr for fuse (uClibc build)
 Group:		System/Libraries
@@ -75,6 +81,20 @@ License:	LGPLv2+
 %description -n	uclibc-%{libulm}
 Libraries for fuse.
 
+%package -n	uclibc-%{devname}
+Summary:	Header files and development libraries for libfuse2
+Group:		Development/C
+License:	LGPLv2+
+Provides:	uclibc-%{name}-devel = %{EVRD}
+Requires:	uclibc-%{libname} = %{version}
+Requires:	uclibc-%{libulm} = %{version}
+Requires:	%{devname} =%{EVRD}
+Conflicts:	%{devname} < 2.9.3-9
+
+%description -n	uclibc-%{devname}
+Header files and development libraries for fuse.
+%endif
+
 %package -n	%{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
@@ -82,10 +102,6 @@ License:	LGPLv2+
 Provides:	%{name}-devel = %{EVRD}
 Requires:	%{libname} = %{EVRD}
 Requires:	%{libulm} = %{EVRD}
-%if %{with uclibc}
-Requires:	uclibc-%{libname} = %{version}
-Requires:	uclibc-%{libulm} = %{version}
-%endif
 
 %description -n	%{devname}
 Header files and development libraries for fuse.
@@ -125,7 +141,7 @@ popd
 
 mkdir -p system
 pushd system
-%configure2_5x \
+%configure \
 	CC="%{__cc} -fuse-ld=bfd" \
 	--bindir=/bin \
 	--exec-prefix=/ \
@@ -197,19 +213,16 @@ fi
 %if %{with uclibc}
 %files -n uclibc-%{libulm}
 %{uclibc_root}/%{_lib}/libulockmgr.so.%{ulmajor}*
+
+%files -n uclibc-%{devname}
+%{uclibc_root}%{_libdir}/*.so
+%{uclibc_root}%{_libdir}/*.a
 %endif
 
 %files -n %{devname}
 %{_includedir}/*
 %{_libdir}/*.so
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/*.so
-%endif
 %{_libdir}/pkgconfig/*
 
 %files -n %{static}
 %{_libdir}/*.a
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/*.a
-%endif
-
