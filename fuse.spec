@@ -5,12 +5,12 @@
 %define	devname	%mklibname %{name} -d
 %define	static	%mklibname %{name} -d -s
 
-%bcond_without	uclibc
+%bcond_with	uclibc
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
 Version:	2.9.3
-Release:	10
+Release:	11
 License:	GPLv2+
 Group:		System/Base
 Url:		http://sourceforge.net/projects/fuse/
