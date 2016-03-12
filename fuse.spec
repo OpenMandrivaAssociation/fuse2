@@ -7,18 +7,19 @@
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse
-Version:	2.9.3
-Release:	11
+Version:	2.9.5
+Release:	1
 License:	GPLv2+
 Group:		System/Base
-Url:		http://sourceforge.net/projects/fuse/
-Source0:	http://downloads.sourceforge.net/project/fuse/%{name}-2.X/%{version}/%{name}-%{version}.tar.gz
+Url:		https://github.com/libfuse/libfuse
+Source0:	https://github.com/libfuse/libfuse/releases/download/fuse_2_9_5/%{name}-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
 Patch1:		fuse-2.9.2-namespace-conflict-fix.patch
 Patch2:		fuse-0001-More-parentheses.patch
 
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
+Requires:	which
 Requires(preun):	rpm-helper
 
 %description
@@ -77,7 +78,10 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
     CC="%{__cc} -fuse-ld=bfd" \
     --bindir=/bin \
     --exec-prefix=/ \
-    --enable-static
+    --enable-static \
+    --enable-util \
+    --enable-lib \
+    --disable-mtab
 
 %make
 
@@ -86,9 +90,9 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 %makeinstall_std -C system
 install -d %{buildroot}/%{_lib}
 for l in libfuse.so libulockmgr.so; do
-	rm %{buildroot}%{_libdir}/${l}
-	mv %{buildroot}%{_libdir}/${l}.*.* %{buildroot}/%{_lib}
-	ln -sr %{buildroot}/%{_lib}/${l}.*.* %{buildroot}%{_libdir}/${l}
+    rm %{buildroot}%{_libdir}/${l}
+    mv %{buildroot}%{_libdir}/${l}.*.* %{buildroot}/%{_lib}
+    ln -sr %{buildroot}/%{_lib}/${l}.*.* %{buildroot}%{_libdir}/${l}
 done
 
 # XXX: have a hard time believing that these symlinks are actually needed,,,
@@ -100,7 +104,7 @@ rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/ru
 
 %preun
 if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
-	chkconfig --del fuse
+    chkconfig --del fuse
 fi
 
 %files
