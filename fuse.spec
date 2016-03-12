@@ -86,8 +86,8 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 %make
 
 %install
+%makeinstall_std
 
-%makeinstall_std -C system
 install -d %{buildroot}/%{_lib}
 for l in libfuse.so libulockmgr.so; do
     rm %{buildroot}%{_libdir}/${l}
