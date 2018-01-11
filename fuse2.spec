@@ -1,18 +1,18 @@
 %define	major 2
 %define	ulmajor 1
-%define	libname %mklibname %{name} %{major}
+%define	libname %mklibname fuse %{major}
 %define	libulm %mklibname ulockmgr %{ulmajor}
 %define	devname %mklibname %{name} -d
 %define	static %mklibname %{name} -d -s
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
-Name:		fuse
+Name:		fuse2
 Version:	2.9.7
 Release:	1
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
-Source0:	https://github.com/libfuse/libfuse/releases/download/fuse_2_9_5/%{name}-%{version}.tar.gz
+Source0:	https://github.com/libfuse/libfuse/releases/download/fuse_2_9_5/fuse-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
 Patch1:		fuse-2.9.2-namespace-conflict-fix.patch
 Patch2:		fuse-0001-More-parentheses.patch
@@ -67,7 +67,7 @@ Requires:	%{devname} = %{EVRD}
 Static libraries for fuse.
 
 %prep
-%setup -q
+%setup -qn fuse-%{version}
 %apply_patches
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
@@ -75,7 +75,8 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
 %configure \
-    CC="%{__cc} -fuse-ld=bfd" \
+    CC="gcc -fuse-ld=bfd" \
+    LD="ld.bfd" \
     --bindir=/bin \
     --exec-prefix=/ \
     --enable-static \
