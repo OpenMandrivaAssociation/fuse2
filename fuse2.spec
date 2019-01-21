@@ -1,3 +1,4 @@
+%define _disable_lto 1
 %define	major 2
 %define	ulmajor 1
 %define	libname %mklibname fuse %{major}
