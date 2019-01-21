@@ -7,8 +7,8 @@
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
-Version:	2.9.7
-Release:	2
+Version:	2.9.9
+Release:	1
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
