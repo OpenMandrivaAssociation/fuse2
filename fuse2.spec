@@ -1,3 +1,5 @@
+# LTO should be disabled due to compiling bug on 86_64 and i686 https://bugs.gentoo.org/663518 (penguin)
+%define _disable_lto 1
 %define	major 2
 %define	ulmajor 1
 %define	libname %mklibname fuse %{major}
@@ -7,8 +9,8 @@
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
-Version:	2.9.7
-Release:	2
+Version:	2.9.9
+Release:	1
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
@@ -84,10 +86,10 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
     --enable-lib \
     --disable-mtab
 
-%make
+%make_build
 
 %install
-%makeinstall_std
+%make_install
 
 install -d %{buildroot}/%{_lib}
 for l in libfuse.so libulockmgr.so; do
