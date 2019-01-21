@@ -1,3 +1,4 @@
+# LTO should be disabled due to compiling bug on 86_64 and i686 https://bugs.gentoo.org/663518 (penguin)
 %define _disable_lto 1
 %define	major 2
 %define	ulmajor 1
@@ -85,10 +86,10 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
     --enable-lib \
     --disable-mtab
 
-%make
+%make_build
 
 %install
-%makeinstall_std
+%make_install
 
 install -d %{buildroot}/%{_lib}
 for l in libfuse.so libulockmgr.so; do
