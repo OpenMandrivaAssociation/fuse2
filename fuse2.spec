@@ -70,7 +70,7 @@ Static libraries for fuse.
 
 %prep
 %setup -qn fuse-%{version}
-%apply_patches
+%autopatch -p1
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
