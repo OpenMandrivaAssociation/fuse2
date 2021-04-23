@@ -1,11 +1,11 @@
 # LTO should be disabled due to compiling bug on 86_64 and i686 https://bugs.gentoo.org/663518 (penguin)
 %define _disable_lto 1
-%define	major 2
-%define	ulmajor 1
-%define	libname %mklibname fuse %{major}
-%define	libulm %mklibname ulockmgr %{ulmajor}
-%define	devname %mklibname %{name} -d
-%define	static %mklibname %{name} -d -s
+%define major 2
+%define ulmajor 1
+%define libname %mklibname fuse %{major}
+%define libulm %mklibname ulockmgr %{ulmajor}
+%define devname %mklibname %{name} -d
+%define static %mklibname %{name} -d -s
 
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
@@ -21,8 +21,6 @@ Patch2:		fuse-0001-More-parentheses.patch
 
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
-Requires:	which
-Requires(preun):	rpm-helper
 
 %description
 FUSE (Filesystem in USErspace) is a simple interface for userspace
@@ -30,7 +28,7 @@ programs to export a virtual filesystem to the linux kernel.  FUSE
 also aims to provide a secure method for non privileged users to
 create and mount their own filesystem implementations.
 
-%package -n	%{libname}
+%package -n %{libname}
 Summary:	Libraries for fuse
 Group:		System/Libraries
 License:	LGPLv2+
@@ -38,16 +36,16 @@ License:	LGPLv2+
 %description -n	%{libname}
 Libraries for fuse.
 
-%package -n	%{libulm}
+%package -n %{libulm}
 Summary:	libulockmgr for fuse
 Group:		System/Libraries
 License:	LGPLv2+
 Conflicts:	%{libname} < 2.9.2-1
 
-%description -n	%{libulm}
+%description -n %{libulm}
 Libraries for fuse.
 
-%package -n	%{devname}
+%package -n %{devname}
 Summary:	Header files and development libraries for libfuse2
 Group:		Development/C
 License:	LGPLv2+
@@ -55,17 +53,17 @@ Provides:	%{name}-devel = %{EVRD}
 Requires:	%{libname} = %{EVRD}
 Requires:	%{libulm} = %{EVRD}
 
-%description -n	%{devname}
+%description -n %{devname}
 Header files and development libraries for fuse.
 
-%package -n	%{static}
+%package -n %{static}
 Summary:	Static libraries for fuse
 Group:		Development/C
 License:	LGPLv2+
 Provides:	%{name}-static-devel = %{EVRD}
 Requires:	%{devname} = %{EVRD}
 
-%description -n	%{static}
+%description -n %{static}
 Static libraries for fuse.
 
 %prep
@@ -104,11 +102,6 @@ ln -s /bin/fusermount %{buildroot}%{_bindir}/fusermount
 ln -s /bin/ulockmgr_server %{buildroot}%{_bindir}/ulockmgr_server
 
 rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
-
-%preun
-if [ -f %{_sysconfdir}/rc.d/init.d/fuse ]; then
-    chkconfig --del fuse
-fi
 
 %files
 %doc AUTHORS ChangeLog NEWS README.NFS
