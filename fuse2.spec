@@ -1,5 +1,6 @@
 # LTO should be disabled due to compiling bug on 86_64 and i686 https://bugs.gentoo.org/663518 (penguin)
 %define _disable_lto 1
+
 %define major 2
 %define ulmajor 1
 %define libname %mklibname fuse %{major}
@@ -10,15 +11,16 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
 Version:	2.9.9
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
 Source0:	https://github.com/libfuse/libfuse/releases/download/fuse_2_9_5/fuse-%{version}.tar.gz
 Patch0:		mount-readlink-hang-workaround.patch
-Patch1:		fuse-2.9.2-namespace-conflict-fix.patch
-Patch2:		fuse-0001-More-parentheses.patch
-
+Patch1:		fuse-0001-More-parentheses.patch
+Patch2:		https://gitweb.gentoo.org/repo/gentoo.git/plain/sys-fs/fuse/files/fuse-2.9.3-kernel-types.patch
+Patch3:		https://gitweb.gentoo.org/repo/gentoo.git/plain/sys-fs/fuse/files/fuse-2.9.9-avoid-calling-umount.patch
+Patch4:		https://gitweb.gentoo.org/repo/gentoo.git/plain/sys-fs/fuse/files/fuse-2.9.9-closefrom-glibc-2-34.patch
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
 
@@ -67,8 +69,7 @@ Requires:	%{devname} = %{EVRD}
 Static libraries for fuse.
 
 %prep
-%setup -qn fuse-%{version}
-%autopatch -p1
+%autosetup -n fuse-%{version} -p1
 
 sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
@@ -110,9 +111,9 @@ rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/ru
 %attr(0755,root,root) /bin/ulockmgr_server
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
-%{_mandir}/man1/fusermount.1.*
-%{_mandir}/man1/ulockmgr_server.1.*
-%{_mandir}/man8/mount.fuse.8.*
+%doc %{_mandir}/man1/fusermount.1.*
+%doc %{_mandir}/man1/ulockmgr_server.1.*
+%doc %{_mandir}/man8/mount.fuse.8.*
 
 %files -n %{libname}
 /%{_lib}/libfuse.so.%{major}*
