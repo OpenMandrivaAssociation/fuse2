@@ -11,7 +11,7 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
 Version:	2.9.9
-Release:	2
+Release:	3
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
@@ -75,11 +75,10 @@ sed -e 's|mknod|/bin/echo Disabled: mknod |g' -i util/Makefile.in
 sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 
 %build
+export MOUNT_FUSE_PATH="%{_sbindir}"
 %configure \
     CC="gcc -fuse-ld=bfd" \
     LD="ld.bfd" \
-    --bindir=/bin \
-    --exec-prefix=/ \
     --enable-static \
     --enable-util \
     --enable-lib \
@@ -90,36 +89,30 @@ sed -i -e 's|INIT_D_PATH=.*|INIT_D_PATH=%{_initrddir}|' configure*
 %install
 %make_install
 
-install -d %{buildroot}/%{_lib}
-for l in libfuse.so libulockmgr.so; do
-    rm %{buildroot}%{_libdir}/${l}
-    mv %{buildroot}%{_libdir}/${l}.*.* %{buildroot}/%{_lib}
-    ln -sr %{buildroot}/%{_lib}/${l}.*.* %{buildroot}%{_libdir}/${l}
-done
-
 # XXX: have a hard time believing that these symlinks are actually needed,,,
-mkdir -p %{buildroot}%{_bindir}
-ln -s /bin/fusermount %{buildroot}%{_bindir}/fusermount
-ln -s /bin/ulockmgr_server %{buildroot}%{_bindir}/ulockmgr_server
-
+mkdir -p %{buildroot}/{bin,sbin}
+ln -s %{_bindir}/fusermount %{buildroot}/bin/fusermount
+ln -s %{_bindir}/ulockmgr_server %{buildroot}/bin/ulockmgr_server
+ln -s %{_sbindir}/mount.fuse %{buildroot}/sbin/mount.fuse
 rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
 
 %files
 %doc AUTHORS ChangeLog NEWS README.NFS
-%attr(0755,root,root) /sbin/mount.fuse
-%attr(4755,root,root) /bin/fusermount
-%attr(0755,root,root) /bin/ulockmgr_server
-%{_bindir}/fusermount
-%{_bindir}/ulockmgr_server
+%attr(0755,root,root) %{_sbindir}/mount.fuse
+%attr(4755,root,root) %{_bindir}/fusermount
+%attr(0755,root,root) %{_bindir}/ulockmgr_server
+/sbin/mount.fuse
+/bin/fusermount
+/bin/ulockmgr_server
 %doc %{_mandir}/man1/fusermount.1.*
 %doc %{_mandir}/man1/ulockmgr_server.1.*
 %doc %{_mandir}/man8/mount.fuse.8.*
 
 %files -n %{libname}
-/%{_lib}/libfuse.so.%{major}*
+%{_libdir}/libfuse.so.%{major}*
 
 %files -n %{libulm}
-/%{_lib}/libulockmgr.so.%{ulmajor}*
+%{_libdir}/libulockmgr.so.%{ulmajor}*
 
 %files -n %{devname}
 %{_includedir}/*
