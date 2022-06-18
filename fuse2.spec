@@ -11,7 +11,7 @@
 Summary:	Interface for userspace programs to export a virtual filesystem to the kernel
 Name:		fuse2
 Version:	2.9.9
-Release:	3
+Release:	4
 License:	GPLv2+
 Group:		System/Base
 Url:		https://github.com/libfuse/libfuse
@@ -89,11 +89,6 @@ export MOUNT_FUSE_PATH="%{_sbindir}"
 %install
 %make_install
 
-# XXX: have a hard time believing that these symlinks are actually needed,,,
-mkdir -p %{buildroot}/{bin,sbin}
-ln -s %{_bindir}/fusermount %{buildroot}/bin/fusermount
-ln -s %{_bindir}/ulockmgr_server %{buildroot}/bin/ulockmgr_server
-ln -s %{_sbindir}/mount.fuse %{buildroot}/sbin/mount.fuse
 rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/rules.d
 
 %files
@@ -101,9 +96,6 @@ rm -rf %{buildroot}%{_sysconfdir}/rc.d/init.d %{buildroot}%{_sysconfdir}/udev/ru
 %attr(0755,root,root) %{_sbindir}/mount.fuse
 %attr(4755,root,root) %{_bindir}/fusermount
 %attr(0755,root,root) %{_bindir}/ulockmgr_server
-/sbin/mount.fuse
-/bin/fusermount
-/bin/ulockmgr_server
 %doc %{_mandir}/man1/fusermount.1.*
 %doc %{_mandir}/man1/ulockmgr_server.1.*
 %doc %{_mandir}/man8/mount.fuse.8.*
