@@ -22,6 +22,11 @@ Patch103:	https://src.fedoraproject.org/rpms/fuse/raw/rawhide/f/fuse2-0004-White
 Patch104:	https://src.fedoraproject.org/rpms/fuse/raw/rawhide/f/fuse2-0005-Whitelist-UFSD-backport-to-2.9-branch-452.patch
 Patch105:	https://src.fedoraproject.org/rpms/fuse/raw/rawhide/f/fuse2-0006-Correct-errno-comparison-571.patch
 Patch106:	https://src.fedoraproject.org/rpms/fuse/raw/rawhide/f/fuse2-0007-util-ulockmgr_server.c-conditionally-define-closefro.patch
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	libtool
 BuildRequires:	gettext-devel
 
